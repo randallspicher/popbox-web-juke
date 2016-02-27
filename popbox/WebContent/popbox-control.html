@@ -1,0 +1,273 @@
+<html>
+<script src="jquery.min.js"></script>
+<body>
+
+<div id="CURRENT"></div>
+<a href="/playback?arg0=prev_aod_in_queue" target="popbox">PREV</a>
+| <a href="/playback?arg0=next_aod_in_queue" target="popbox">NEXT</a>
+| <a href="/playback?arg0=pause_aod" target="popbox">PAUSE</a>
+| <a href="/playback?arg0=resume_aod" target="popbox">RESUME</a>
+| <a href="/playback?arg0=stop_aod" target="popbox">STOP</a>
+<p>
+
+<a href="javascript:browse('smb://192.168.1.2','popbox');">browse</a>
+<div id="FILES"></div>
+
+<div id="DEBUG"></div>
+
+
+VIDEO: 
+<a href="/playback?arg0=list_vod_queue_info" target="popbox">Show Video Queue</a>
+| <a href="/playback?arg0=get_current_vod_info" target="popbox">Currently Playing</a>
+| <a href="/playback?arg0=next_vod_in_queue" target="popbox">NEXT</a>
+| <a href="/playback?arg0=stop_vod" target="popbox">STOP</a>
+| <a href="/playback?arg0=set_playback_speed_vod&arg1=0" target="popbox">PAUSE</a>
+| <a href="/playback?arg0=set_playback_speed_vod&arg1=1x" target="popbox">PLAY</a>
+| <a href="/playback?arg0=pause_vod" target="popbox">PAUSE QUEUE</a>
+| <a href="/playback?arg0=resume_vod" target="popbox">RESUME</a>
+
+
+<br>
+AUDIO: 
+<a href="/playback?arg0=list_aod_queue_info" target="popbox">list_aod_queue_info</a>
+| <a href="/playback?arg0=get_current_aod_info" target="popbox">get_current_aod_info</a>
+| <a href="/playback?arg0=get_playlist_current_aod_info" target="popbox">get_playlist_current_aod_info</a>
+| <a href="/playback?arg0=list_playlist_aod_queue_info" target="popbox">list_playlist_aod_queue_info</a>
+| <a href="/playback?arg0=list_playlist_aod_queue_info" target="popbox">list_playlist_aod_queue_info</a>
+       
+
+                 
+
+<!--
+| <a href="/playback?arg0=set_playback_speed_aod&arg1=0" target="popbox">PAUSE</a>
+| <a href="/playback?arg0=set_playback_speed_aod&arg1=1x" target="popbox">PLAY</a>
+-->
+
+
+<div><iframe name="popbox" width="100%" height="500"></iframe></div>
+
+
+
+
+<script>
+
+function htmlEncode(value) {
+    return $('<div/>').text(value).html();
+}
+
+function htmlDecode(value) {  
+    return $('<div/>').html(value).text();
+} 
+//function currentcallback(xml){
+//alert('we called back');
+//$("#CURRENT" ).empty().append(xml);
+//}
+
+//function current() {
+ //$.getJSON('/playback?arg0=get_current_aod_info&callback=?', function(json){
+ //currentcallback(json);
+//}
+//);
+
+//}
+
+//function currentx(){
+
+//$("#CURRENT" ).empty().append('testing');
+
+
+//$.ajax({
+//       type: "GET",
+//	url: "/playback?arg0=get_current_aod_info",
+//	dataType: "xml",
+//	crossDomain: 'true',
+//	success: function(xml) {
+ //				alert(xml);
+//
+//	},
+//	error: function(d1,d2,d3){
+//$("#CURRENT" ).empty().append('an error happened d1='+d1 + ' d2='+d2+ ' d3='+d3);
+//	
+//	}
+//});
+
+//}
+
+setInterval ("currentlyPlaying()",2000);
+
+function currentlyPlaying(){
+	var url="/playback?arg0=get_current_aod_info";
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "text",
+		//	crossDomain: 'true',
+		success: function( response ) {
+//			var response =(new XMLSerializer()).serializeToString(data);
+			var album=$(response).find('album').html();
+			var artist=$(response).find('artist').html();
+			var title=$(response).find('title').html();
+			var totalTime=$(response).find('totalTime').text();
+			var currentTime=$(response).find('currentTime').text();
+
+			var tmin=(totalTime-totalTime%60)/60;
+			var tsec=totalTime%60;
+			var ttime=tmin+":";
+			if (tsec<10){
+				ttime+="0";
+			}
+			ttime +=tsec;
+			
+			var cmin=(currentTime-currentTime%60)/60;
+			var csec=currentTime%60;
+			var ctime=cmin+":";
+			if (csec<10){
+				ctime+="0";
+			}
+			ctime +=csec;
+
+			var data="<table>";
+			data+="<tr><td>Title</td><td>"+title+"</td></tr>";
+			data+="<tr><td>Album</td><td>"+album+"</td></tr>";
+			data+="<tr><td>Artist</td><td>"+artist+"</td></tr>";
+			data+="<tr><td></td><td>"+ctime+" / "+ttime+"</td></tr>";
+			data+="</table>";
+			$("#CURRENT" ).empty().append(data);
+
+		}
+	});
+}
+
+currentlyPlaying();
+
+function queue(filepath){
+//alert('file:'+filepath);
+var url="/playback?arg0=insert_aod_queue&arg1=&arg2="+filepath+"&arg3=show";
+	$.get(url,	{},  
+		 function( data ) {
+			//var xmlstr =  (new XMLSerializer()).serializeToString(data);
+			//alert(xmlstr);
+		}
+	);
+}
+
+
+
+/*
+        arg0 Function name String
+arg1 First level mount point. String
+arg2 Further level mount point. String
+arg3 Username to access this content. String
+arg4 Password to access this content. String
+arg5 Offset, start number of the response list. String
+arg6 Range, number of response to return. Default is 99999. String
+arg7 Show folders in response list. Boolean
+arg8 Show files in response list. Boolean
+arg9 Enable return more information of the file or folder. Example: file size. Boolean
+arg10 Mime type to return. 
+
+*/
+
+function browse(mount,dir){
+
+$("#DEBUG" ).empty();
+
+	function renderfile(){
+	
+			var isFolder=$(this).find('isFolder').text();
+			var modifyDate=$(this).find('modifyDate').text();
+			var name=$(this).find('name').text();
+			var size=$(this).find('size').text();
+			
+//			alert(name);
+			var link="";
+			var data="<tr>";
+			if (isFolder=='yes'){
+			data+="<td><a href=\"javascript:browse(&quot;"+mount+"&quot;,&quot;"+dir+"/"+name+"&quot;);\">"+htmlEncode(name)+"</a></td>";
+			}
+			else {
+			data+="<td><a href=\"javascript:queue(&quot;"+mount+"/"+dir+"/"+name+"&quot;);\">"+htmlEncode(name)+"</a></td>";
+				
+			}
+			//alert(link);
+			data+="</tr>";
+			$("#FILES" ).append(data);
+
+
+	};
+
+	var url="/network_browse?arg0=list_network_content&arg1="+mount+"&arg2="+dir;
+		url+="&arg3=&arg4=&arg5=&arg6=&arg7=&arg8=&arg9=&arg10=";
+/*
+	$.get("/network_browse",
+{
+			arg0: "list_network_content",
+			arg1: mount,
+			arg2: decodeURIComponent(dir),
+			arg3: "",
+			arg4: "",
+			arg5: "",
+			arg6: "",
+			arg7: "",
+			arg8: "",
+			arg9: "",
+			arg10:"" 
+		}
+*/		
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "text",
+		//	crossDomain: 'true',
+		success: function( data ) {
+			var files="";
+			//var xmlstr = (new XMLSerializer()).serializeToString(data);
+//			alert(data);
+			$("#FILES" ).empty();
+			$("#FILES" ).append("<table>");
+			var backdir=dir.substr(0,dir.lastIndexOf("/"));
+			var link="(\""+mount+"','"+backdir+"\");";
+			$("#FILES" ).append("<tr><td><a href=\"javascript:browse(&quot;"+mount+"&quot;,&quot;"+backdir+"&quot;);\"> .. </a></td></tr>");
+			$(data).find("fileList").find("file").each(renderfile);
+			$("#FILES" ).append("</table>");
+			
+		//	$("#DEBUG" ).empty().append(data.replace(/[<]/g,"&lt;").replace(/[>]/g,"&gt;"));
+		},
+		error: function(d1,d2,d3){
+			$("#DEBUG" ).empty().append('an error happened d1='+d1 + ' d2='+d2+ ' d3='+d3);
+		}
+	});
+
+/*
+$.get(url,{},
+		 function( data ) {
+		//alert('ran');
+		// alert($(data).text());
+			var files="";
+			var xmlstr = (new XMLSerializer()).serializeToString(data);
+			alert(data);
+			$("#FILES" ).empty();
+			$("#FILES" ).append("<table>");
+			var backdir=dir.substr(0,dir.lastIndexOf("/"));
+			var link="(\""+mount+"','"+backdir+"\");";
+			$("#FILES" ).append("<tr><td><a href=\"javascript:browse(&quot;"+mount+"&quot;,&quot;"+backdir+"&quot;);\"> .. </a></td></tr>");
+			$(xmlstr).find("fileList").find("file").each(renderfile);
+			$("#FILES" ).append("</table>");
+			
+			$("#DEBUG" ).empty().append(xmlstr.replace(/[<]/g,"&lt;").replace(/[>]/g,"&gt;"));
+				
+		}
+
+);
+*/
+}	
+	
+</script>
+
+
+</body>
+
+
+
+</html>
+

@@ -1,0 +1,496 @@
+<html>
+<head>
+<script type="text/javascript">
+var sharepath="smb://192.168.1.2";
+var sharename="popbox";
+var currentrefresh=2000;
+</script>
+<script src="jquery.min.js"></script>
+<style>
+body {
+color:#330066;
+background-color:#eeddff;
+}
+.current {
+background-color:#660033;
+color:#ffaaff;
+
+}
+.nowplaying {
+font-size:larger;
+}
+
+a {
+color:#0000ff;
+background-color:#eeddff
+}
+td, a, div {
+font-family:sans,verdana;
+}
+.action {
+	vertical-align:middle;
+	padding:4px;
+	xxmargin:3px;
+}
+.action img {
+	border:solid black 1px;
+}
+
+.title {
+	vertical-align:middle;
+}
+.icon {
+	padding:4px;
+	vertical-align:middle;
+}
+#CHOLDER{
+text-align:center;
+}
+#CURRENT{
+	margin-left: auto;
+	margin-right: auto;
+	width: 50px;
+	text-align: left;
+overflow:auto;
+}
+#CURRENT table tr td{
+white-space: nowrap;
+}
+#FILES, #QUEUE {
+text-align:left;
+}
+</style>
+</head>
+<body>
+
+
+<div id="DEBUG"></div>
+<div id="DEBUG2"></div>
+<div id="CHOLDER" style="width:50%;float:left;height:100%;">
+<div style="height:25%">
+<table width="100%"><tr><td>&nbsp;</td><td id="CURRENT"></td><td>&nbsp;</td></tr></table>
+<a href="javascript:prev();">PREV</a>
+| <a href="javascript:next();">NEXT</a>
+| <a href="javascript:pause();">PAUSE</a>
+| <a href="javascript:resume();">RESUME</a>
+| <a href="javascript:stop();">STOP</a>
+
+<br><a href="javascript:showqueue();">refresh queue</a>
+<!-- 
+<a href="javascript:browse(sharepath,sharename);">browse</a>
+-->
+</div>
+<div id="QUEUE" style="height:75%;overflow:auto;"></div>
+</div>
+<div id="FILES" style="height:100%;width:50%;overflow:auto;"></div>
+
+<script>
+function htmlEncode(value) {
+    return $('<div/>').text(value).html();
+}
+
+function htmlDecode(value) {  
+    return $('<div/>').html(value).text();
+} 
+
+
+
+
+function currentlyPlaying(){
+	var url="/popbox/prox.jsp?cmd=playback?arg0=get_current_vod_info";
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "text",
+		//	crossDomain: 'true',
+		success: function( response ) {
+//			var response =(new XMLSerializer()).serializeToString(data);
+			var album=$(response).find('album').text();
+			var artist=$(response).find('artist').text();
+			var title=$(response).find('title').text();
+			var fullpath=$(response).find('fullPath').text();
+	        if (title.trim().length<=0){
+				title=fullpath.substr(fullpath.lastIndexOf("/")+1);
+			}
+	        if (album.trim().length<=0){
+				album=fullpath.substr(0,fullpath.lastIndexOf("/"));
+				album=album.substr(album.lastIndexOf("/")+1);
+	        }
+	        if (artist.trim().length<=0){
+				artist=fullpath.substr(0,fullpath.lastIndexOf("/"));
+				artist=artist.substr(0,artist.lastIndexOf("/"));
+				artist=artist.substr(artist.lastIndexOf("/")+1);
+	        }
+	        var id=title.replace(/[^a-zA-Z0-9]/g,"x");
+			var totalTime=$(response).find('totalTime').text();
+			var currentTime=$(response).find('currentTime').text();
+
+			
+			$('tr.querow').removeClass('current');
+			//$('#'+fullPath).addClass('current');		
+			$('#'+id).addClass('current');		
+
+			var tsec=totalTime%60;
+			var tsr=totalTime-tsec;
+			var tmr=tsr/60;
+			var tmin=tmr%60;
+			tmr=tmr-tmin;
+			var thour=tmr/60;
+			var ttime="";
+
+			var csec=currentTime%60;
+			var csr=currentTime-csec;
+			var cmr=csr/60;
+			var cmin=cmr%60;
+			cmr=cmr-cmin;
+			var chour=cmr/60;
+			var ctime="";
+			
+			//			if (thour>0){
+//				ttime+=thour+":";
+//			}
+//			if (thour>0 && tmin<10){
+//				ttime+="0";
+//			}
+//			ttime=tmin+":";
+//			if (tsec<10){
+//				ttime+="0";
+//			}
+//			ttime +=tsec;
+
+			
+			if (thour>0){
+				ttime=thour+":";
+				if (tmin<10){
+					ttime+="0";
+				}
+			}
+			ttime+=tmin+":";
+			if (tsec<10){
+				ttime+="0";
+			}
+			ttime+=tsec;
+			
+			if (chour>0){
+				ctime=chour+":";
+				if (cmin<10){
+					ctime+="0";
+				}
+			}
+			ctime+=cmin+":";
+			if (csec<10){
+				ctime+="0";
+			}
+			ctime+=csec;
+
+			var data="<table>";
+			data+="<tr><td>Title:</td><td class='nowplaying'>"+title.replace(/[_]/g,' ')+"</td></tr>";
+			//data+="<tr><td>Path:</td><td>"+fullPath+"</td></tr>";
+			data+="<tr><td>Album:</td><td>"+album.replace(/[_]/g,' ')+"</td></tr>";
+			data+="<tr><td>Artist:</td><td>"+artist.replace(/[_]/g,' ')+"</td></tr>";
+			data+="<tr><td></td><td title='"+currentTime+"/"+totalTime+"'>"+ctime+" / "+ttime+"</td></tr>";
+			data+="</table>";
+			$("#CURRENT" ).empty().append(data);
+
+		}
+	});
+}
+
+currentlyPlaying();
+
+function queue(filepath){
+	//filepath=encodeURI(filepath);
+	filepath=escape(filepath);
+	//alert('file:'+filepath);
+	var url="/popbox/prox.jsp?cmd=playback?arg0=insert_vod_queue&arg1=&arg2="+filepath+"&arg3=show";
+	//alert('url='+url);
+	//var url="/playback?arg0=insert_vod_queue&arg1=";
+	$.get(url,	{},  
+		 function( data ) {
+			setTimeout ("showqueue()",500);
+		}
+	);
+}
+
+function remove(index){
+//alert('file:'+filepath);
+var url="/popbox/prox.jsp?cmd=playback?arg0=delete_vod_entry_queue&arg1="+index;
+	$.get(url,	{},  
+		 function( data ) {
+			setTimeout ("showqueue()",500);
+		}
+	);
+}
+
+
+
+/*
+        arg0 Function name String
+arg1 First level mount point. String
+arg2 Further level mount point. String
+arg3 Username to access this content. String
+arg4 Password to access this content. String
+arg5 Offset, start number of the response list. String
+arg6 Range, number of response to return. Default is 99999. String
+arg7 Show folders in response list. Boolean
+arg8 Show files in response list. Boolean
+arg9 Enable return more information of the file or folder. Example: file size. Boolean
+arg10 Mime type to return. 
+
+*/
+
+function browse(mount,dir){
+$("#DEBUG" ).empty();
+
+	function renderfile(){
+	
+			var isFolder=$(this).find('isFolder').text();
+			var modifyDate=$(this).find('modifyDate').text();
+			var name=$(this).find('name').text();
+			var size=$(this).find('size').text();
+			var type=$(this).find('type').text();
+			var sz=size+" b";
+			if (size>1024*1024*1024*1024){
+				sz=Math.round(size/(1024*1024*1024*1024)*10)/10+" T";
+			}
+			if (size>1024*1024*1024){
+				sz=Math.round(size/(1024*1024*1024)*10)/10+" G";
+			}
+			else if (size>1024*1024){
+				sz=Math.round(size/(1024*1024)*10)/10+" M";
+			}
+			else if (size>1024){
+				sz=Math.round(size/(1024)*10)/10+" k";
+			}
+			
+//			alert(name);
+			var link="";
+			var data="<tr>";
+			if (isFolder=='yes'){
+				data+="<td>&nbsp;</td>";
+				data+="<td class='icon'><img alt='' src='folder.gif'></td>";
+				data+="<td class='title'><a href=\"javascript:browse(&quot;"+mount+"&quot;,&quot;"+dir+"/"+name+"&quot;);\"> "+htmlEncode(name)+" </a></td>";
+			}
+			else {
+				//data+="<td><button type='button' title='Add this to the Queue' onclick=\"queue(&quot;"+mount+"/"+dir+"/"+name+"&quot;);\" >Add</button></td>";
+				data+="<td class='action'><a href=\"javascript:queue(&quot;"+mount+"/"+dir+"/"+name+"&quot;);\" title='Add this to the Queue'><img alt='ADD' src='plus.gif'></a></td>";
+				data+="<td class='icon'><img alt='("+type+")' src='"+type+".gif'></td>";
+				data+="<td class='title'>"+htmlEncode(name)+" </td>";
+				data+="<td title=\""+size+"\">("+sz+")</td>";
+			}
+			//alert(link);
+			data+="</tr>";
+			$("#FILES" ).append(data);
+
+
+	};
+
+	var url="/popbox/prox.jsp?cmd=network_browse?arg0=list_network_content&arg1="+mount+"&arg2="+dir;
+		url+="&arg3=&arg4=&arg5=&arg6=&arg7=true&arg8=true&arg9=true&arg10=";
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "text",
+		//	crossDomain: 'true',
+		success: function( data ) {
+			var files="";
+			//var xmlstr = (new XMLSerializer()).serializeToString(data);
+			$("#FILES" ).empty();
+			$("#FILES" ).append("<table>");
+			$("#FILES" ).append("<tr><td>");
+			var dirlist=dir.split("/");
+			var backdir="";
+			for (var d in dirlist){
+				backdir +=dirlist[d];
+				if (d>0){
+					$("#FILES").append("&nbsp;/&nbsp;");
+				}
+				else {
+					$("#FILES").append("[");
+				}
+				if (d<dirlist.length-1){
+					$("#FILES").append("<a href=\"javascript:browse(&quot;"+mount+"&quot;,&quot;"+backdir+"&quot;);\">"+dirlist[d]+"</a>");
+				}
+				else {
+					$("#FILES").append(dirlist[d]);
+				}
+				backdir+="/";
+			}
+			$("#FILES" ).append("&nbsp;]</td></tr>");
+			
+			$("#FILES" ).append("<tr><td><hr/></td></tr>");
+			
+			//backdir=dir.substr(0,dir.lastIndexOf("/"));
+			//var link="(\""+mount+"','"+backdir+"\");";
+			//$("#FILES" ).append("<tr><td><a href=\"javascript:browse(&quot;"+mount+"&quot;,&quot;"+backdir+"&quot;);\"> [ .. ] </a></td></tr>");
+			$(data).find("fileList").find("file").each(renderfile);
+			$("#FILES" ).append("</table>");
+			
+			//$("#DEBUG2" ).empty().append(data.replace(/[<]/g,"&lt;").replace(/[>]/g,"&gt;"));
+		},
+		error: function(d1,d2,d3){
+			$("#DEBUG" ).empty().append('an error happened d1='+d1 + ' d2='+d2+ ' d3='+d3);
+		}
+	});
+}	
+
+
+function showqueue(){
+//alert('showqueue');
+$("#DEBUG" ).empty();
+
+	function showfile(){
+
+
+			var fullpath=$(this).find('fullpath').text();
+			var title=$(this).find('title').text();
+			var index=$(this).find('index').text();
+	        if (title.trim().length<=0){
+				title=fullpath.substr(fullpath.lastIndexOf("/")+1);
+			}
+
+	        var id=title.replace(/[^a-zA-Z0-9]/g,"x");
+//			alert(title);
+			var link="";
+//			var data="<tr class='querow' id=\""+fullpath+"\">";
+			var data="<tr class='querow' id=\""+id+"\">";
+//			data+="<td><a href=\"javascript:remove(&quot;"+index+"/"+dir+"/"+name+"&quot;);\" title='Add this to the Queue'></a></td>";
+			data+="<td class='action'><a href=\"javascript:remove(&quot;"+index+"&quot;);\"><img alt='REMOVE' src='remove.gif'></a></td>";
+//			data+="<td><a href=\"javascript:remove(&quot;"+index+"&quot;);\">[remove]</a></td>";
+			data+="<td class='title' title=\""+htmlEncode(fullpath)+"\">"+htmlEncode(title)+"</td>";
+			data+="</tr>";
+	//		data+="<tr><td>"+htmlEncode(fullpath)+"</td></tr>";
+			$("#QUEUE" ).append(data);
+
+	};
+
+	var url="/popbox/prox.jsp?cmd=playback?arg0=list_vod_queue_info";
+//		url+="&arg3=&arg4=&arg5=&arg6=&arg7=&arg8=&arg9=&arg10=";
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "text",
+		//	crossDomain: 'true',
+		success: function( data ) {
+//			alert('have data');
+			var files="";
+			//var xmlstr = (new XMLSerializer()).serializeToString(data);
+			$("#QUEUE" ).empty();
+			$("#QUEUE" ).append("<table cellspacing='4'>");
+			$(data).find("response").find("queue").each(showfile);
+			$("#QUEUE" ).append("</table>");
+			
+		//	$("#DEBUG" ).empty().append(data.replace(/[<]/g,"&lt;").replace(/[>]/g,"&gt;"));
+		},
+		error: function(d1,d2,d3){
+			$("#DEBUG" ).empty().append('an error happened d1='+d1 + ' d2='+d2+ ' d3='+d3);
+		}
+	});
+}	
+
+var PREV="arg0=prev_vod_in_queue";
+var NEXT="arg0=next_vod_in_queue";
+var PAUSE="arg0=pause_vod";
+var RESUME="arg0=resume_vod";
+var STOP="arg0=stop_vod";
+
+function pause(){
+	playback(PAUSE);
+}
+function resume(){
+	playback(RESUME);
+}
+function stop(){
+	playback(STOP);
+}
+function next(){
+	playback(NEXT);
+}
+function prev(){
+	playback(PREV);
+}
+
+
+function playback(COMMAND){
+	
+	var url="/popbox/prox.jsp?cmd=playback?"+COMMAND;
+$.ajax({
+	type: "GET",
+	url: url,
+	dataType: "text",
+	success: function( data ) {
+	},
+	error: function(d1,d2,d3){
+		$("#DEBUG" ).empty().append('an error happened d1='+d1 + ' d2='+d2+ ' d3='+d3);
+	}
+});
+	
+	
+} 
+
+var videoformats="";
+
+function getvideoformats(){
+	
+	var url="/popbox/prox.jsp?cmd=playback?arg0=list_vod_supported_format";
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "text",
+		success: function( data ) {
+//			$("#DEBUG2" ).empty().append(data.replace(/[<]/g,"&lt;").replace(/[>]/g,"&gt;"));
+	
+			$(data).find("response").find("format").each(function(index) {
+//				alert(index);
+				videoformats+="|"+$(this).text()+"|";
+			});
+		},
+		error: function(d1,d2,d3){
+			$("#DEBUG" ).empty().append('an error happened d1='+d1 + ' d2='+d2+ ' d3='+d3);
+		}
+	});
+}
+
+var audioformats="";
+function getaudioformats(){
+	
+	var url="/popbox/prox.jsp?cmd=playback?arg0=list_aod_supported_format";
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "text",
+		success: function( data ) {
+//			$("#DEBUG2" ).empty().append(data.replace(/[<]/g,"&lt;").replace(/[>]/g,"&gt;"));
+	
+			$(data).find("response").find("format").each(function(index) {
+//				alert(index);
+				audioformats+="|"+$(this).text()+"|";
+			});
+		},
+		error: function(d1,d2,d3){
+			$("#DEBUG" ).empty().append('an error happened d1='+d1 + ' d2='+d2+ ' d3='+d3);
+		}
+	});
+}
+
+setTimeout ("browse(sharepath,sharename);showqueue()",500);
+setInterval ("currentlyPlaying()",currentrefresh);
+
+
+
+function listformats(){
+	var msg="video format=";
+	msg+=videoformats;
+	alert(msg);	
+}
+
+//getvideoformats();
+</script>
+
+
+</body>
+
+
+
+</html>
+

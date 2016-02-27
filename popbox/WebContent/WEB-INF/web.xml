@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+-->
+<web-app 
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+    version="2.5">
+<!-- 
+<servlet>
+     <servlet-name>prox</servlet-name>
+     <jsp-file>prox.jsp</jsp-file>
+</servlet>
+
+<servlet-mapping>
+     <servlet-name>prox</servlet-name>
+     <url-pattern>/prox</url-pattern>
+</servlet-mapping>
+
+-->
+
+<context-param>
+<param-name>pophost</param-name>
+<param-value>192.168.1.11</param-value>
+</context-param>
+<context-param>
+<param-name>defaultrefresh</param-name>
+<param-value>5000</param-value>
+</context-param>
+<context-param>
+<param-name>sharepath1</param-name>
+<param-value>nfs://192.168.1.2</param-value>
+</context-param>
+
+<context-param>
+<param-name>thedavidport</param-name>
+<param-value>8008</param-value>
+</context-param>
+<context-param>
+<param-name>remoteport</param-name>
+<param-value>30000</param-value>
+</context-param>
+
+
+
+</web-app>
+
