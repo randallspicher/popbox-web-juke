@@ -30,6 +30,7 @@ import="org.apache.commons.httpclient.*
 ,java.util.logging.Logger
 ,java.util.regex.Pattern
 ,java.util.regex.Matcher
+,java.util.HashMap
 
 "
 %>
@@ -100,9 +101,49 @@ String thedavidport = application.getInitParameter("thedavidport");
 String remoteport = application.getInitParameter("remoteport");
 String mount=request.getParameter("mount");
 
-String mountpoint = (String) request.getSession().getAttribute("mountpoint");
-String localpoint = (String) request.getSession().getAttribute("localpoint");
-String httppoint = (String) request.getSession().getAttribute("httppoint");
+
+//log.info("mount="+mount);
+String mountpoint="";
+String localpoint="";
+String httppoint="";
+String rootpath="";
+String httppath="";
+Pattern sharepattern = Pattern.compile("^([^/:]+)://([^/]*)/+([^/]+)", Pattern.CASE_INSENSITIVE);
+Matcher mm = sharepattern.matcher(mount);
+
+if (mm.find()) {
+//	mountpoint=mm.group(0);
+	//store our mountpoint in session for use in getcoverimage
+	String protocall=mm.group(1);	
+	String server=mm.group(2);	
+	String share=mm.group(3);
+	mountpoint=protocall+"://"+server+"/"+share;
+	request.getSession().setAttribute("mountpoint", mountpoint);
+	
+	
+	//log.info("mountpoint="+mountpoint);
+	//log.info("protocall="+protocall);
+	//log.info("server="+server);
+	//log.info("share="+share);
+
+	HashMap<String,HashMap<String,String>> sharemap = (HashMap<String,HashMap<String,String>>) request.getSession().getAttribute("sharemap");
+
+	HashMap<String,String> node=sharemap.get(share);
+	if (node!=null){
+		localpoint=node.get("localpoint");
+		httppoint=node.get("httppoint");
+	}
+	//log.info("localpoint="+localpoint);
+	//log.info("httppoint="+httppoint);
+
+	rootpath = mount.replaceFirst(mountpoint, localpoint);
+	httppath = mount.replaceFirst(mountpoint, httppoint);
+	
+
+}
+
+
+
 String uname = (String) request.getSession().getAttribute("uname");
 String upass = (String) request.getSession().getAttribute("upass");
 
@@ -119,35 +160,17 @@ if (null==mount){
 	mount="";
 }
 
-//log.info("mountpoint:"+mountpoint);
-//log.info("localpoint:"+localpoint);
-//log.info("httppoint:"+httppoint);
-
-//String dir=request.getParameter("dir");
-//if (dir==null){
-//	dir="";
-//}
-
-//log.info("mount="+mount);
-//System.out.println("dir.length="+mount.length());
 
 String url = "http://" + nmthost + ":" + thedavidport;
-//String query = request.getQueryString();
-
-String encmount=mount.replaceAll("&", "%26");
-String username=uname.replaceAll("&", "%26");
-String password=upass.replaceAll("&", "%26");
 
 boolean showmounts=false;
-//if (dir.length()>0){
-//	url+="arg0=list_network_content&arg1="+mount+"&arg2="+dir;
 
-//log.info("checkpoint");
+
 if (mount.startsWith("file")){
 	showmounts=false;
 	url+="/file_operation?";
 	url+="arg0=list_user_storage_file";
-	url+="&arg1="+encmount.replaceFirst("file://","");
+	url+="&arg1="+URLEncoder.encode(mount.replaceFirst("file://",""),"UTF-8").replaceAll("\\+","%20");
 	url+="&arg2=";
 	url+="&arg3=";
 	url+="&arg4=true";
@@ -158,12 +181,14 @@ if (mount.startsWith("file")){
 else {
 	url+="/network_browse?";
 	if (mount.matches("[^\\/]+\\:\\/\\/.+\\/.+")){	
+
 		showmounts=false;	
+
 		url+="arg0=list_network_content";
-		url+="&arg1="+encmount;
+		url+="&arg1="+URLEncoder.encode(mount,"UTF-8").replaceAll("\\+","%20");
 		url+="&arg2=";
-		url+="&arg3="+username+"";
-		url+="&arg4="+password+"";
+		url+="&arg3="+URLEncoder.encode(uname,"UTF-8").replaceAll("\\+","%20");
+		url+="&arg4="+URLEncoder.encode(upass,"UTF-8").replaceAll("\\+","%20");
 		url+="&arg5=";
 		url+="&arg6=";
 		url+="&arg7=true";
@@ -173,11 +198,12 @@ else {
 	}
 	else {
 		showmounts=true;
-		url+="arg0=list_network_resource&arg1="+encmount+"&arg2=";
+		url+="arg0=list_network_resource&arg1="+URLEncoder.encode(mount,"UTF-8").replaceAll("\\+","%20")+"&arg2=";
 		url+="&arg3=";
 	}
 }
-//log.info("url="+url);
+log.info("mount="+mount);
+log.info("url="+url);
 SAXParserFiles SPF=new SAXParserFiles(url);
 
 
@@ -204,6 +230,13 @@ for (String thisdir :dirlist){
 }
 %>
 </div>
+
+	<c:set var="urlpath" value='<%=httppath%>' scope="request"/>
+	<c:set var="rootpath" value='<%=rootpath%>' scope="request"/>
+	<jsp:include page="nfodata.jsp"/>
+
+
+
 <div class="controls">
 	<button type="button" onclick="submitSelected();">ADD Selected</button>
 	<button type="button"  onclick="selectAll();submitSelected();">ADD All</button>
@@ -232,6 +265,8 @@ for (FileItem thisfile: SPF.getFiles()){
 }
 
 %>
+
+
 <div class="foldercontainer">
 <%
 
@@ -240,33 +275,41 @@ for (FileItem thisfile: directories){
 	String filename=thisfile.getName();
 	String thismountpoint=mount+"/"+filename;
 
-	out.print("<a class=\"folderbox folder-bg\" href=\"javascript:browse(&quot;"+
-	   Utility.htmlEncode(mount+"/"+filename)+"&quot;);\">");
-	%>
-		<span class="folderimagebox">
-			<%
-			String image=Utility.getCoverImage(thismountpoint,mountpoint,localpoint,httppoint);
+//	out.print("<a class=\"folderbox folder-bg\" href=\"javascript:browse(&quot;"+
+//	   Utility.htmlEncode(mount+"/"+filename)+"&quot;);\">");
 
-			if (image!=null){	
-				%>
-				<img class='folderimage' src="<%=image%>" />
-				<%
-			}
-			else {
-				%>
-				&nbsp;<br/>
-				&nbsp;<br/>
-				&nbsp;<br/>
-				<!-- img class="foldericon" src='icon/folder.gif'/-->
-				<%
-			}
-			%>
-		</span>
-		<span class='foldertitle'>
-			<%=Utility.htmlEncode(filename).replaceAll("_"," ")%> 
-		</span>
-	<%
-	out.print("</a>");
+	String bgstyle="";
+	String folderimage=Utility.getCoverImage(thismountpoint,mountpoint,localpoint,httppoint);
+	String logo=Utility.getLogo(thismountpoint,mountpoint,localpoint,httppoint);
+	//String image=Utility.getCoverImage(thismountpoint,mountpoint,localpoint,httppoint);
+	if (folderimage!=null){	
+		folderimage=Utility.htmlEncode(folderimage);
+		bgstyle="background-image:url(\""+folderimage+"\"); background-size:contain; backcground-repeat:no-repeat;";
+	}
+	if (logo!=null){	
+		logo=Utility.htmlEncode(logo);
+//		bgstyle="background-image:url(\""+logo+"\"); background-size:contain; backcground-repeat:no-repeat;";
+	}
+	String foldertitle=Utility.htmlEncode(filename).replaceAll("_"," ");
+
+	%>
+	
+
+	<a class="folderbox folder-bg" 
+		href='javascript:browse("<%=Utility.htmlEncode(mount+"/"+filename)%>");'>
+	<div class="titleblock">
+		<% if (null != logo){%>
+		<img class="folderlogo" src='<%=logo%>' alt="<%=foldertitle%>" title="<%=foldertitle %>" />
+		<%} else { %>
+		<div class="foldertitle"><%=foldertitle%></div>
+		<% } %>
+	</div>
+	<%if (folderimage!=null){%>	
+		<img  class="folderimage" src='<%=folderimage%>'/>
+	<%} %>
+
+	</a>
+<%	
 }
 %>
 </div>
@@ -309,8 +352,8 @@ for (FileItem thisfile: files){
 	 {
 		//data+="<td><button type='button' title='Add this to the Queue' onclick=\"queue(&quot;"+mount+"/"+dir+"/"+name+"&quot;);\" >Add</button></td>";
 
-		String rootpath=mount.replace(mountpoint,localpoint);
-		String httppath=mount.replaceFirst(mountpoint,httppoint);
+		rootpath=mount.replace(mountpoint,localpoint);
+		httppath=mount.replaceFirst(mountpoint,httppoint);
 
 		String fullpath=rootpath+"/"+filename;
 		String title="";
@@ -435,8 +478,11 @@ function queue(filepath,type,title){
 }
 
 function browse(mount){
-	window.location="?nmthost=<%=nmthost%>&mount="+encodeURIComponent(mount);
+
+	//window.location="?nmthost=<%=nmthost%>&mount="+encodeURIComponent(mount);
+	window.location="?"+$.param({nmthost:"<%=nmthost%>",mount:mount});
 }
+
 
 $(window).load(function () {
 	 $(".photo").each(function (){

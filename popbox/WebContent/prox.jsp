@@ -45,11 +45,11 @@ for(int i=0; i<=10; i++){
 			query+="&";
 		}
 		//params.setParameter("arg"+i, request.getParameter("arg"+i));
-		query+="arg"+i+"="+URLEncoder.encode(request.getParameter("arg"+i),"UTF-8");
+		query+="arg"+i+"="+URLEncoder.encode(request.getParameter("arg"+i),"UTF-8").replaceAll("\\+","%20");
 	}
 }
 URI uri = new URI("http",null,nmthost,dport,"/"+cmd);
-query=query.replaceAll("[+]","%20");
+//query=query.replaceAll("[+]","%20");
 
 //LOGGER.info("query = "+ query);
 

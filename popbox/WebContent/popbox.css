@@ -89,30 +89,77 @@ width:100%;
 }
 .folderbox {
 	position:relative;
-	overflow:auto;
+	overflow:none;
 	display:inline-block;
 	padding: 1em;
 	text-align:center;
 	vertical-align:top;
-	min-height:10em;
-	width:12em;
+	width:27vw;
+	height:30vw;
+	xmax-height:35vw;
+	min-width:25vw;
 	margin:2px 2px 2px 2px;
 }
 
-.folderimagebox {
+.folderimage {
+	z-index:1;
+	overflow:none;
    	display: block;
- 	vertical-align: bottom;
+   	margin:auto;
+   	text-align:center;
+ 	vertical-align: middle;
+ 	padding-bottom:4px;
  	text-align:center;
-	height:8em;
-	width:12em;
+	max-height:25vw;
+	max-width:25vw;
 }
-.foldertitle {
-	background-color: rgba(248, 247, 216, 0.7);
-	padding:5px;
+
+	.titleblock {
+	z-index:1;
+	overflow:none;
+	font-weight: bolder;
+	color:black;
 	display:block;
 	text-align:center;
-	xvertical-align:bottom;
-	width:12em;
+	vertical-align:top;
+	max-width:25vw;
+	height:6vw;
+}
+
+	.folderlogo {
+	position:absolute;
+	top:0vw;
+	left: 4vw;
+	z-index:10;
+	overflow:visible;
+	font-weight: bolder;
+	color:black;
+	display:block;
+	text-align:center;
+	vertical-align:top;
+	max-width:24vw;
+	height:10vw;
+}
+
+	.folderlogo:hover {
+	background-color:#444444;
+	
+}
+
+.foldertitle {
+	position:absolute;
+	overflow:none;
+	background-color: rgba(248, 247, 216, 0.95);
+	font-weight: bolder;
+	font-size: smaller;
+	color:black;
+	padding:2px 2px 2px 2px;
+	display:block;
+	text-align:center;
+	width:25vw;
+	z-index:10;
+	vertical-align:top;
+	max-height:10vw;
 }
 .folderdisplay {
 	position:relative;
@@ -120,15 +167,16 @@ width:100%;
 }
 
 img.folderimage {
-	vertical-align:bottom;
-	max-height:8em;
-	max-width:10em;
+	
+	xvertical-align:bottom;
+	xmax-height:10em;
+	xmax-width:13em;
 }
 
 img.foldericon {
-	vertical-align:bottom;
-	height:5em;
-	width:5em;
+	xvertical-align:bottom;
+	xheight:5em;
+	xwidth:5em;
 }
 
 img.cover {
@@ -144,10 +192,12 @@ img.photo {
 	max-height:48px;
 }
 .folder-bg {
-	background-image: url("icon/folder-bg.png");
+	xbackground-image: url("icon/folder-bg.png");
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position:center;
+	border: 2px silver;
+	background-color:#222222;
 }
 .video-bg {
 	background-image: url("icon/video-bg.png");

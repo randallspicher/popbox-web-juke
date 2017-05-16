@@ -22,6 +22,7 @@ import="org.apache.commons.httpclient.*
 ,java.io.File
 ,java.io.FileFilter
 ,java.util.logging.Logger
+,java.util.HashMap
 ,java.util.regex.Pattern
 ,java.util.regex.Matcher
 
@@ -91,9 +92,35 @@ String nmthost = request.getParameter("nmthost");
 String thedavidport = application.getInitParameter("thedavidport");
 String remoteport = application.getInitParameter("remoteport");
 String mount=request.getParameter("mount");
-String mountpoint = (String) request.getSession().getAttribute("mountpoint");
-String localpoint = (String) request.getSession().getAttribute("localpoint");
-String httppoint = (String) request.getSession().getAttribute("httppoint");
+
+//log.info("mount="+mount);
+String mountpoint="";
+String localpoint="";
+String httppoint="";
+Pattern sharepattern = Pattern.compile("^([^/]+)//([^/]*)/+([^/]+)", Pattern.CASE_INSENSITIVE);
+Matcher mm = sharepattern.matcher(mount);
+
+if (mm.find()) {
+	mountpoint=mm.group(0);
+	//String protocall=mm.group(1);	
+	//String server=mm.group(2);	
+	String share=mm.group(3);	
+	//log.info("mountpoint="+mountpoint);
+	//log.info("protocall="+protocall);
+	//log.info("server="+server);
+	//log.info("share="+share);
+
+	HashMap<String,HashMap<String,String>> sharemap = (HashMap<String,HashMap<String,String>>) request.getSession().getAttribute("sharemap");
+
+	HashMap<String,String> node=sharemap.get(share);
+	if (node!=null){
+		localpoint=node.get("localpoint");
+		httppoint=node.get("httppoint");
+	}
+	//log.info("localpoint="+localpoint);
+	//log.info("httppoint="+httppoint);
+
+}
 
 
 //String dir=request.getParameter("dir");

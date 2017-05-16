@@ -11,6 +11,7 @@ import="org.apache.commons.httpclient.*
 ,org.apache.commons.httpclient.methods.*
 ,java.net.*
 ,java.util.ArrayList
+,java.util.HashMap
 ,java.util.List
 ,javax.xml.parsers.SAXParser
 ,javax.xml.parsers.SAXParserFactory
@@ -92,16 +93,42 @@ String thedavidport = application.getInitParameter("thedavidport");
 String remoteport = application.getInitParameter("remoteport");
 String mount=request.getParameter("mount");
 
-String mountpoint = (String) request.getSession().getAttribute("mountpoint");
-String localpoint = (String) request.getSession().getAttribute("localpoint");
-String httppoint = (String) request.getSession().getAttribute("httppoint");
+
+//log.info("mount="+mount);
+String mountpoint="";
+String localpoint="";
+String httppoint="";
+Pattern sharepattern = Pattern.compile("^([^/]+)//([^/]*)/+([^/]+)", Pattern.CASE_INSENSITIVE);
+Matcher mm = sharepattern.matcher(mount);
+
+if (mm.find()) {
+	mountpoint=mm.group(0);
+	//String protocall=mm.group(1);	
+	//String server=mm.group(2);	
+	String share=mm.group(3);	
+	//log.info("mountpoint="+mountpoint);
+	//log.info("protocall="+protocall);
+	//log.info("server="+server);
+	//log.info("share="+share);
+
+	HashMap<String,HashMap<String,String>> sharemap = (HashMap<String,HashMap<String,String>>) request.getSession().getAttribute("sharemap");
+
+	HashMap<String,String> node=sharemap.get(share);
+	if (node!=null){
+		localpoint=node.get("localpoint");
+		httppoint=node.get("httppoint");
+	}
+	//log.info("localpoint="+localpoint);
+	//log.info("httppoint="+httppoint);
+
+}
 
 //String dir=request.getParameter("dir");
 //if (dir==null){
 //	dir="";
 //}
 
-log.info("mount="+mount);
+//log.info("mount="+mount);
 //System.out.println("dir.length="+mount.length());
 
 String url = "http://" + nmthost + ":" + thedavidport+"/network_browse?";
@@ -120,7 +147,7 @@ else {
 	url+="&arg3=";
 }
 
-log.info("url="+url);
+//log.info("url="+url);
 SAXParserFiles SPF=new SAXParserFiles(url);
 
 
@@ -215,7 +242,7 @@ for (FileItem thisfile: directories){
 for (FileItem thisfile: files){
 	String filename=thisfile.getName();
 	//filename=htmlEncode(filename);
-	log.info("filename="+filename);
+	//log.info("filename="+filename);
 	String type=thisfile.getType();
 	long size=(long)thisfile.getSize();
 	double k=1024;

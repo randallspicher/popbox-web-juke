@@ -96,17 +96,14 @@
 
 				</td>
 
-
-
-
 				<td class="currentBox" style="text-align:left;width:100%;">
 					<div id="CHOLDER">
 						<div class="cover"> </div>
 						<div id="CURRENT"> </div>
 						<div style="text-align:left;">
-							<a href="popbox.jsp">popbox</a>	
-							<a href="a400.jsp">a400 (nfs)</a>
-							<a href="a400-local.jsp">Local a400</a>
+							<a href="popbox.jsp">[popbox]</a> &nbsp;
+							<a href="a400.jsp">[a400]</a>
+							<!-- <a href="a400-local.jsp">Local a400</a> -->
 						</div>
 					</div>
 

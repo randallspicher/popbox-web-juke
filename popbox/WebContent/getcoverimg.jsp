@@ -17,6 +17,7 @@
 ,java.io.IOException
 ,java.io.File
 ,java.io.FileFilter
+,java.util.HashMap
 ,java.util.regex.Pattern
 ,java.util.regex.Matcher,
 java.util.logging.Logger
@@ -42,106 +43,54 @@ java.util.logging.Logger
 	String thedavidport = application.getInitParameter("thedavidport");
 	String remoteport = application.getInitParameter("remoteport");
 	String mount = request.getParameter("mount");
+	String type = request.getParameter("type");
 
-	String mountpoint = (String) request.getSession().getAttribute("mountpoint");
-	String localpoint = (String) request.getSession().getAttribute("localpoint");
-	String httppoint = (String) request.getSession().getAttribute("httppoint");
+// NOTE:  pch returns local paths, not our shared points, so pull last known mount-point from session (saved while browsing)
 
-	
+	//log.info("mount="+mount);
+			
+////	file:///opt/sybhttpd/localhost.drives/NETWORK_SHARE/share4/
+
+String mountpoint=(String) request.getSession().getAttribute("mountpoint");	
+
+mount=mount.replaceFirst("file:///opt/sybhttpd/localhost.drives/NETWORK_SHARE/share.", mountpoint);
+
+//log.info("new mount="+mount);
+
+//	String mountpoint="";
+	String localpoint="";
+	String httppoint="";
+	Pattern sharepattern = Pattern.compile("^([^/:]+)://([^/]*)/+([^/]+)", Pattern.CASE_INSENSITIVE);
+	Matcher mm = sharepattern.matcher(mountpoint);
+
+	if (mm.find()) {
+		//mountpoint=mm.group(0);
+		String protocall=mm.group(1);	
+		String server=mm.group(2);	
+		String share=mm.group(3);	
+		//log.info("mountpoint="+mountpoint);
+		//log.info("protocall="+protocall);
+		//log.info("server="+server);
+		//log.info("share="+share);
+
+		HashMap<String,HashMap<String,String>> sharemap = (HashMap<String,HashMap<String,String>>) request.getSession().getAttribute("sharemap");
+
+		HashMap<String,String> node=sharemap.get(share);
+		if (node!=null){
+			localpoint=node.get("localpoint");
+			httppoint=node.get("httppoint");
+		}
+	}
+
 	String imgsize = request.getParameter("imgsize");
-	
-	
 	
 	if (imgsize == null) {
 		imgsize = "100";
 	}
 
-//	log.info("mount=" + mount);
-
-	// list items in directory
-	//mount=mount.replace("file://","");
-
 	String image=Utility.getCoverImage(mount,mountpoint,localpoint,httppoint);
 
-/*	
-	String rootpath = mount;
-	//log.info("path1:" + rootpath);
-	
-	rootpath = mount.replaceFirst("file.+\\/media-share\\/", "/media-share/");
-	//log.info("path2:" + rootpath);
-	rootpath = rootpath.replaceFirst("file.+\\/NETWORK_SHARE\\/share\\d+\\/", "/media-share/");
 
-	String httppath = rootpath;
-
-	//log.info("path3:" + rootpath);
-	//rootpath=rootpath.replace("file:///opt/.+NETWORK_SHARE/shares\\d+/","/");
-
-	//httppath=httppath.replace("file:///opt/.+NETWORK_SHARE/shares\\d+/","/media/");
-	boolean found = false;
-	String image="";
-	if (!found) {
-		Pattern coverpattern = Pattern.compile("^(cover|folder|front|poster)\\.(jpg$|jpeg$|png$|gif$)", Pattern.CASE_INSENSITIVE);
-		File directory = new File(rootpath);
-		if (directory.isDirectory()) {
-			//out.print("x");
-			for (File thisfile : directory.listFiles()) {
-				//	out.print("y");
-				if (!thisfile.isDirectory()) {
-					//	out.print("z");
-					String name = thisfile.getName();
-					Matcher mm = coverpattern.matcher(name);
-					if (mm.find()) {
-						image=httppath + "/" + name;
-						found = true;
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-	if (!found) {
-		Pattern coverpattern = Pattern.compile("(cover|folder|front|poster).*(jpg$|jpeg$|png$|gif$)", Pattern.CASE_INSENSITIVE);
-		File directory = new File(rootpath);
-		if (directory.isDirectory()) {
-			//out.print("x");
-			for (File thisfile : directory.listFiles()) {
-				//	out.print("y");
-				if (!thisfile.isDirectory()) {
-					//	out.print("z");
-					String name = thisfile.getName();
-					Matcher mm = coverpattern.matcher(name);
-					if (mm.find()) {
-						image=httppath + "/" + name;
-						found = true;
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-	if (!found) {
-		Pattern coverpattern = Pattern.compile("(jpg$|jpeg$|png$|gif$)", Pattern.CASE_INSENSITIVE);
-		File directory = new File(rootpath);
-		if (directory.isDirectory()) {
-			//out.print("x");
-			for (File thisfile : directory.listFiles()) {
-				//	out.print("y");
-				if (!thisfile.isDirectory()) {
-					//	out.print("z");
-					String name = thisfile.getName();
-					Matcher mm = coverpattern.matcher(name);
-					if (mm.find()) {
-						image=httppath + "/" + name;
-						found = true;
-						break;
-					}
-				}
-			}
-		}
-	}
-	*/
 	if (null!=image && !image.isEmpty()){
 		%>
 		<a href="<%=image%>" target="_blank">
