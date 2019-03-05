@@ -34,54 +34,52 @@ public class Utility {
 	}
 
 	public static String getFanart(String path, String mountpoint, String localpoint, String httppoint) {
-		Logger log = Logger.getLogger("browse.jsp");
+		
+		String image = getFile("^(fanart)\\.(jpg$|jpeg$|png$|gif$)",path,mountpoint,localpoint,httppoint);
 
-		String rootpath = path.replaceFirst(mountpoint, localpoint);
-		String httppath = path.replaceFirst(mountpoint, httppoint);
-
-		boolean found = false;
-		String image = "";
-		if (!found) {
-			Pattern coverpattern = Pattern.compile("^(fanart.*)\\.(jpg$|jpeg$|png$|gif$)", Pattern.CASE_INSENSITIVE);
-			File directory = new File(rootpath);
-			try {
-				if (directory.isDirectory()) {
-					// out.print("x");
-					try {
-						for (File thisfile : directory.listFiles()) {
-							// out.print("y");
-							try {
-								if (!thisfile.isDirectory()) {
-									// out.print("z");
-									String name = thisfile.getName();
-									Matcher mm = coverpattern.matcher(name);
-									if (mm.find()) {
-										image = httppath + "/" + name;
-										found = true;
-										break;
-									}
-								}
-							} catch (Exception c) {
-
-							}
-						}
-					} catch (Exception b) {
-
-					}
-				}
-			} catch (Exception a) {
-
-			}
+		if (null==image) {
+			image = getFile("^.*(fanart).*(jpg$|jpeg$|png$|gif$)",path,mountpoint,localpoint,httppoint);
 		}
 
-		if (found) {
-			return image;
-		} else {
-			return null;
-		}
+		return image;
 	}
 
 	public static String getLogo(String path, String mountpoint, String localpoint, String httppoint) {
+
+		String image = getFile("^(logo)\\.(jpg$|jpeg$|png$|gif$)",path,mountpoint,localpoint,httppoint);
+
+		return image;
+	}
+
+	public static String getCover(String path, String mountpoint, String localpoint, String httppoint) {
+
+		String image = getFile("^(cover|folder|front|poster|album)\\.(jpg$|jpeg$|png$|gif$)",path,mountpoint,localpoint,httppoint);
+
+		if (null==image) {
+			image = getFile(".*(cover|folder|front|poster|album).*(jpg$|jpeg$|png$|gif$)",path,mountpoint,localpoint,httppoint);
+		}
+
+		if (null==image) {
+			image = getFile(".*(jpg$|jpeg$|png$|gif$)",path,mountpoint,localpoint,httppoint);
+		}
+		return image;
+	}
+
+	public static String getThumb(String path, String mountpoint, String localpoint, String httppoint) {
+
+		String image = getFile("^(thumb)\\.(jpg$|jpeg$|png$|gif$)",path,mountpoint,localpoint,httppoint);
+
+		if (null==image) {
+
+			image = getFile("^.*(thumb).*(jpg$|jpeg$|png$|gif$)",path,mountpoint,localpoint,httppoint);
+		}
+
+		return image;
+	}
+	
+	
+	
+	private static String getFile(String theRegex, String path, String mountpoint, String localpoint, String httppoint) {
 		Logger log = Logger.getLogger("browse.jsp");
 
 		String rootpath = path.replaceFirst(mountpoint, localpoint);
@@ -89,8 +87,9 @@ public class Utility {
 
 		boolean found = false;
 		String image = "";
+
 		if (!found) {
-			Pattern coverpattern = Pattern.compile("^(logo)\\.(jpg$|jpeg$|png$|gif$)", Pattern.CASE_INSENSITIVE);
+			Pattern coverpattern = Pattern.compile(theRegex, Pattern.CASE_INSENSITIVE);
 			File directory = new File(rootpath);
 			try {
 				if (directory.isDirectory()) {
@@ -121,90 +120,6 @@ public class Utility {
 
 			}
 		}
-		if (found) {
-			return image;
-		} else {
-			return null;
-		}
-	}
-
-	public static String getCoverImage(String path, String mountpoint, String localpoint, String httppoint) {
-		Logger log = Logger.getLogger("browse.jsp");
-
-		String rootpath = path.replaceFirst(mountpoint, localpoint);
-		String httppath = path.replaceFirst(mountpoint, httppoint);
-
-		boolean found = false;
-		String image = "";
-
-		if (!found) {
-			Pattern coverpattern = Pattern.compile("^(cover|folder|front|poster).*(jpg$|jpeg$|png$|gif$)", Pattern.CASE_INSENSITIVE);
-			File directory = new File(rootpath);
-			try {
-				if (directory.isDirectory()) {
-					// out.print("x");
-					try {
-						for (File thisfile : directory.listFiles()) {
-							// out.print("y");
-							try {
-								if (!thisfile.isDirectory()) {
-									// out.print("z");
-									String name = thisfile.getName();
-									Matcher mm = coverpattern.matcher(name);
-									if (mm.find()) {
-										image = httppath + "/" + name;
-										found = true;
-										break;
-									}
-								}
-							} catch (Exception c) {
-
-							}
-						}
-					} catch (Exception b) {
-
-					}
-				}
-			} catch (Exception a) {
-
-			}
-		}
-
-		if (!found) {
-			Pattern coverpattern = Pattern.compile("(jpg$|jpeg$|png$|gif$)", Pattern.CASE_INSENSITIVE);
-			File directory = new File(rootpath);
-			if (directory.isDirectory()) {
-				// out.print("x");
-				try {
-					if (directory.isDirectory()) {
-						// out.print("x");
-						try {
-							for (File thisfile : directory.listFiles()) {
-								// out.print("y");
-								try {
-									if (!thisfile.isDirectory()) {
-										// out.print("z");
-										String name = thisfile.getName();
-										Matcher mm = coverpattern.matcher(name);
-										if (mm.find()) {
-											image = httppath + "/" + name;
-											found = true;
-											break;
-										}
-									}
-								} catch (Exception c) {
-
-								}
-							}
-						} catch (Exception b) {
-
-						}
-					}
-				} catch (Exception a) {
-
-				}
-			}
-		}
 
 		if (found) {
 			return image;
@@ -212,5 +127,6 @@ public class Utility {
 			return null;
 		}
 	}
+
 
 }

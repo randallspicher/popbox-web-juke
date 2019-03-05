@@ -1,6 +1,6 @@
 package nmt.utils;
 
-public class FileItem {
+public class FileItem  implements Comparable<FileItem>{
 
 	private boolean fileisfolder=false;
 	private String filename="";
@@ -34,4 +34,9 @@ public class FileItem {
 	public long getSize(){
 		return filesize;
 	}
+	
+	public int compareTo(FileItem compareFile) {
+		return this.filename.compareToIgnoreCase(compareFile.getName());
+	}
+	
 }
