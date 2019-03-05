@@ -14,7 +14,7 @@
 	var nmthost = "${nmthost}";
 	var mount="${mountpoint}";
 	var currentrefresh = ${defaultrefresh};
-	var queuetype = 'vod';
+	var queuetype = 'aod';
 </script>
 
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
@@ -25,10 +25,20 @@
 -->
 <script type="text/javascript" src="general.js"></script>
 
+<script type="text/javascript">
+	
+	function setmax(which){
+		$(".BOX").removeClass("MAX");
+		$(which).addClass("MAX");
+		
+	}
+
+</script>
+
 <link rel="StyleSheet" href="popbox.css" type="text/css" />
 </head>
 <body>
-	
+
 	<div class="headerBox">
 		<table style="width:100%;">
 			<tr>
@@ -97,14 +107,19 @@
 				</td>
 
 				<td class="currentBox" style="text-align:left;width:100%;">
-					<div id="CHOLDER">
-						<div class="cover"> </div>
-						<div id="CURRENT"> </div>
+					<div id="CHOLDER" class="BOX">
+						<div class="windowcontrol">
+							<a href="javascript:setmax('none');" class="simplebutton">[-]</a>	
+							<a href="javascript:setmax('#CHOLDER');" class="simplebutton">[+]</a>
+						</div>
+						<div id="CURRENT" class="floatingbox" ></div>
+						<div id="COVER" class="floatingbox" ></div>
+<!-- 
 						<div style="text-align:left;">
 							<a href="popbox.jsp">[popbox]</a> &nbsp;
 							<a href="a400.jsp">[a400]</a>
-							<!-- <a href="a400-local.jsp">Local a400</a> -->
 						</div>
+-->
 					</div>
 
 				</td>
@@ -113,15 +128,23 @@
 		</table>
 	</div>
 		<div class="contentBox">
-			<div class="contentBoxLeft" id="QUEUE"></div>
-			<div id="FILEBOX" 
-			class="contentBoxRight ui-widget-content"
-			>
+			<div class="contentBoxLeft BOX" id="QUEUEBOX">
+				<div class="windowcontrol">
+					<a href="javascript:setmax('none');" class="simplebutton">[-]</a>
+					<a href="javascript:setmax('#QUEUEBOX');" class="simplebutton">[+]</a>
+				</div>
+				<div id="QUEUE"></div>
+			</div>
+			<div id="FILEBOX"  class="BOX contentBoxRight ui-widget-content">
+				<div class="windowcontrol">
+					<a href="javascript:setmax('none');" class="simplebutton">[-]</a>
+					<a href="javascript:setmax('#FILEBOX');" class="simplebutton">[+]</a>
+				</div>
 				<iframe 
 					class="ui-widget-content"
 					frameborder="0" marginheight="0" marginwidth="0" 
 					id="FILES" seamless="seamless" 
-					src="browse.jsp?nmthost=${nmthost}&mount=${mountpoint}">
+					src="browse2.jsp?nmthost=${nmthost}&mount=${mountpoint}">
 				</iframe>
 			</div>
 		</div>
@@ -176,4 +199,5 @@
 	</div>
 
 </body>
+
 </html>

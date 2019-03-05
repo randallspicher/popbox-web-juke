@@ -86,6 +86,28 @@ if (null == fanart){
 		
 	}
 }
+{
+	File FANART = new File(rootpath+"/album.jpg");
+	try {
+		if (FANART.isFile()){
+			poster=urlpath+"/album.jpg";
+		}
+	}
+	catch (Exception EX){
+		
+	}
+}
+{
+	File FANART = new File(rootpath+"/artist.jpg");
+	try {
+		if (FANART.isFile()){
+			poster=urlpath+"/artist.jpg";
+		}
+	}
+	catch (Exception EX){
+		
+	}
+}
 if (null == poster){
 	File FANART = new File(rootpath+"/cover.jpg");
 	try {
@@ -108,6 +130,28 @@ if (null == poster){
 		
 	}
 }
+if (null == poster){
+	File FANART = new File(rootpath+"/../album.jpg");
+	try {
+		if (FANART.isFile()){
+			poster=urlpath+"/../album.jpg";
+		}
+	}
+	catch (Exception EX){
+		
+	}
+}
+if (null == poster){
+	File FANART = new File(rootpath+"/../artist.jpg");
+	try {
+		if (FANART.isFile()){
+			poster=urlpath+"/../artist.jpg";
+		}
+	}
+	catch (Exception EX){
+		
+	}
+}
 
 if (null == poster){
 	File FANART = new File(rootpath+"/../folder.jpg");
@@ -122,16 +166,11 @@ if (null == poster){
 }
 
 %>
-<style>
-.poster {
-max-width:30vw;
-max-height:30vw;
-}
-.fanart {
-max-width:60vw;
-max-height:30vw;
-}
-</style>
+
+
+		<% if (null != logo){%>
+		<img class="logo" src="<%=logo%>"/>
+		<% } %>
 <div class="folderinfo">
 <%
 if (poster!=null){
@@ -139,6 +178,7 @@ if (poster!=null){
 	<img class="poster" src="<%=poster %>"/>
 	<%
 }
+
 if (fanart!=null){
 	%>
 	<img class="fanart" src="<%=fanart%>"/>
@@ -151,10 +191,12 @@ if (fanart!=null){
 	try {
 		if (NFO.isFile()){
 		%>
+		<!-- 
 		<div>
 		Found artist.nfo
 		<br>httppoint: <%=urlpath %>
 		</div>
+		-->
 		<%
 		}
 	}
@@ -168,9 +210,11 @@ if (fanart!=null){
 	try {
 		if (NFO.isFile()){
 		%>
+		<!-- 
 		<div>
 		Found album.nfo
 		</div>
+		-->
 		<%
 		}
 	}
@@ -187,9 +231,11 @@ if (fanart!=null){
 	try {
 		if (NFO.isFile()){
 		%>
+		<!-- 
 		<div>
 		Found movie.nfo
 		</div>
+		-->
 		<%
 		}
 	}
@@ -204,9 +250,11 @@ if (fanart!=null){
 	try {
 		if (NFO.isFile()){
 		%>
+		<!-- 
 		<div>
 		Found tvshow.nfo
 		</div>
+		-->
 		<%
 		}
 	}

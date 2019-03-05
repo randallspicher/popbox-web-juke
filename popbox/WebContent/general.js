@@ -64,7 +64,7 @@ function currentlyPlaying(){
 	        	currentlyplaying=false;
 				$('tr.querow').removeClass('current');
 	        	$("#DEBUG2").empty().append("Nothing Playing");
-	        	$(".cover").empty();
+	        	$("#COVER").empty();
 	        }
 	        if (title.trim().length<=0){
 				title=fullpath.substr(fullpath.lastIndexOf("/")+1);
@@ -171,27 +171,28 @@ function currentlyPlaying(){
 
 function getCover(){
 	//alert(currenttrack);
-	var lookpath=currenttrack.replace(/[^\/]+$/,"");
-	//alert('lookpath: '+lookpath);
-	var url="getcoverimg.jsp?nmthost="+nmthost+"&mount="+lookpath;	 
-	var owner=$(".cover");
-	owner.empty();
-	$.ajax({
-		type: "GET",
-		url: url,
-		dataType: "text",
-		success: function( data ) {
-			owner.append(data);
-			//alert(data)
-			//var newimg=$(data).filter("img");
-			//alert(newimg.attr("src"));
-			//if (newimg){
+	if (currenttrack){
+		var lookpath=currenttrack.replace(/[^\/]+$/,"");
+		//alert('lookpath: '+lookpath);
+		var url="getcoverimg.jsp?nmthost="+nmthost+"&mount="+lookpath;	 
+		var owner=$("#COVER");
+		owner.empty();
+		$.ajax({
+			type: "GET",
+			url: url,
+			dataType: "text",
+			success: function( data ) {
+				owner.append(data);
+				//alert(data)
+				//var newimg=$(data).filter("img");
+				//alert(newimg.attr("src"));
+				//if (newimg){
 				//owner.attr("src",newimg.attr("src"));
-			//}
-		}
-			 
-	});
-		 
+				//}
+			}	
+		
+		});
+	}	 
 }
 
 
@@ -270,6 +271,7 @@ function listSpeeds(){
 
 
 
+
 var QueueQueue = [];
 
 function queue(filepath, filetype, filetitle){
@@ -278,6 +280,8 @@ function queue(filepath, filetype, filetitle){
 	document.getElementById("queuelength").innerHTML=QueueQueue.length;
 	processQueue();
 }
+
+
 
 var processingQueue=false;
 function processQueue(){
@@ -298,15 +302,15 @@ function processQueue(){
 
 		filepath=encodeURI(filepath);
 		title=encodeURI(title);
-		if (type=='video'){
-			queuetype='vod';
-		}	
-		if (type=='music'){
-			queuetype='aod';
-		}
-		if (type=='photo'){
-			queuetype='pod';
-		}
+		//if (type=='video'){
+		//	queuetype='vod';
+		//}	
+		//if (type=='music'){
+		//	queuetype='aod';
+		//}
+		//if (type=='photo'){
+		//	queuetype='pod';
+		//}
 		
 		
 		

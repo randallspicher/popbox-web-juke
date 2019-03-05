@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>eversion-randalls-ui</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>TMM-Conversion</name>
+			<type>2</type>
+			<location>/d1/YAMJ/TMM-Conversion</location>
+		</link>
+		<link>
+			<name>randallsUI</name>
+			<type>2</type>
+			<location>/d1/YAMJ/randallsUI</location>
+		</link>
+	</linkedResources>
+</projectDescription>

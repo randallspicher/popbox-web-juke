@@ -90,8 +90,18 @@ function shuffle(array) {
 	  return array;
 	}
 </script>
+
+
+
 </head>
+
+
 <body class="content">
+<!-- 	<div>
+	<a href="javascript:setmax('browse');">[+]</a>
+	<a href="javascript:setmax('playing');">[-]</a>
+	</div>
+-->
 <%
 Logger log= Logger.getLogger("browse.jsp"); 
 
@@ -279,13 +289,18 @@ for (FileItem thisfile: directories){
 //	   Utility.htmlEncode(mount+"/"+filename)+"&quot;);\">");
 
 	String bgstyle="";
-	String folderimage=Utility.getCoverImage(thismountpoint,mountpoint,localpoint,httppoint);
+	String thumb=Utility.getThumb(thismountpoint,mountpoint,localpoint,httppoint);
 	String logo=Utility.getLogo(thismountpoint,mountpoint,localpoint,httppoint);
-	//String image=Utility.getCoverImage(thismountpoint,mountpoint,localpoint,httppoint);
-	if (folderimage!=null){	
-		folderimage=Utility.htmlEncode(folderimage);
-		bgstyle="background-image:url(\""+folderimage+"\"); background-size:contain; backcground-repeat:no-repeat;";
+	
+	if (thumb==null) {
+		thumb=Utility.getCover(thismountpoint,mountpoint,localpoint,httppoint);
 	}
+	
+	if (thumb!=null){	
+		thumb=Utility.htmlEncode(thumb);
+		bgstyle="background-image:url(\""+thumb+"\"); background-size:contain; backcground-repeat:no-repeat;";
+	}
+
 	if (logo!=null){	
 		logo=Utility.htmlEncode(logo);
 //		bgstyle="background-image:url(\""+logo+"\"); background-size:contain; backcground-repeat:no-repeat;";
@@ -297,6 +312,7 @@ for (FileItem thisfile: directories){
 
 	<a class="folderbox folder-bg" 
 		href='javascript:browse("<%=Utility.htmlEncode(mount+"/"+filename)%>");'>
+
 	<div class="titleblock">
 		<% if (null != logo){%>
 		<img class="folderlogo" src='<%=logo%>' alt="<%=foldertitle%>" title="<%=foldertitle %>" />
@@ -304,8 +320,8 @@ for (FileItem thisfile: directories){
 		<div class="foldertitle"><%=foldertitle%></div>
 		<% } %>
 	</div>
-	<%if (folderimage!=null){%>	
-		<img  class="folderimage" src='<%=folderimage%>'/>
+	<%if (thumb!=null){%>	
+		<img  class="folderimage" src='<%=thumb%>'/>
 	<%} %>
 
 	</a>
@@ -415,17 +431,18 @@ for (FileItem thisfile: files){
 			<a href="javascript:queue('<%=StringEscapeUtils.escapeEcmaScript(mount+"/"+filename)%>','<%=type%>','<%=StringEscapeUtils.escapeEcmaScript(title)%>');" 
 				title='Add this to the Queue'><img alt='ADD' src='icon/plus.gif'></a>
 		</td>
-				
+	<!--			
 		<td class='action'>
 			<a href="javascript:queue('<%=Utility.htmlEncode(httppath+"/"+filename)%>','<%=type%>','<%=Utility.htmlEncode(title)%>');" 
 			title='Add this to the Queue Via HTTP'><img alt='+ HTTP' src='icon/plusHTTP.gif'></a>
 		</td>
-		
+	-->
+	<!-- 	
 		<td class='action'>
 			<a href="<%=Utility.htmlEncode(httppath+"/"+filename)%>" 
 			title='Open Locally'><img alt='Open' src='icon/plusHTTP.gif'></a>
 		</td>
-			
+	-->		
 		<%
 		if (("music".equalsIgnoreCase(type)||"video".equalsIgnoreCase(type))
 				&& !(filename.matches(".*[cCMmPp][uU3Ll][eEUuSs]") 
@@ -476,6 +493,9 @@ out.print("</form>");
 function queue(filepath,type,title){
 	parent.queue(filepath,type,title);
 }
+function setmax(thing){
+	parent.setmax(thing);
+}
 
 function browse(mount){
 
@@ -515,7 +535,6 @@ $(window).load(function () {
 });
 
 </script>
-
 <p>nmthost = <%=nmthost%></p>
 </body>
 </html>

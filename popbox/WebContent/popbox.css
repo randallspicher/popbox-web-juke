@@ -3,36 +3,60 @@
 *{margin:0;padding:0}
 html, body {height:100%;;width:100%; position:static; xoverflow:hidden;}
 
-body { background-color:#f9f9f9;}
+body { 
+	xxxbackground-color:#f9f9f9;
+	background-color:#222222;
+    color:#CCCCAA;
+}
+td, a, div {
+font-family:sans,verdana;
+}
+a {
+    color:#FFAAAA;
+ }
+ div {
+	display:inline-block;
+	vertical-align:top;
+}
  
-.headerBox {width:100%; height:160px; overflow:auto;}
+ .folderinfo {
+ display:block;
+ }
+.headerBox {width:100%; height:170px; overflow:auto;}
 .currentBox{min-width:60%;height:100%;}
 
 .footerBox { position:absolute ;width:100%; height:30px; bottom:0px; }        
 .contentBox {width:100%;}
 
 .contentBoxLeft  {
-	float:left;
 	vertical-align:top; 
-	width:30%;
+	left:0px;
+	width:15em;
 	overflow:auto;
-	max-width:30%;
 	}
 
 .contentBoxRight {
 	vertical-align:top; 
-	left:30%;
-	width:70%;
-	float:right;
+	left: 15em;
+	right: 0px;;
 	overflow:hidden
 	}    
+
+
 .contentBoxLeft, .contentBoxRight {
-xheight:100%;	
 position:absolute;	
-top:165px;
+top:170px;
 bottom:5px;
 border:#ddd 1px solid;
 }
+
+img.cover {
+	max-height:168px;;
+	float:left;
+	padding-left:5px;
+	padding-right:15px;	
+}
+
 iframe {
 	height:99%;
 	width:99%;
@@ -54,13 +78,33 @@ font-weight:bold;
 font-size:larger;
 }
 
-a {
-color:#0000ff;
-xbackground-color:#eeddff
+
+.poster {
+max-width:30vw;
+max-height:30vw;
 }
-td, a, div {
-font-family:sans,verdana;
+.fanart {
+max-width:60vw;
+max-height:30vw;
 }
+
+.logo {
+	xposition: absolute;
+   xleft: 50%;
+   xtransform: translate(-50%, 0);
+	xfont-weight: bolder;
+	xcolor:black;
+	vertical-align:top;
+	max-width:18em;
+	max-height:6em;
+	xz-index:10;
+	xoverflow:none;
+   	xmargin-top: -10px;
+ 	xtext-align:center;
+ 	xpadding-bottom:2em;
+}
+
+
 .action {
 	vertical-align:middle;
 	padding:0px;
@@ -94,11 +138,59 @@ width:100%;
 	padding: 1em;
 	text-align:center;
 	vertical-align:top;
-	width:27vw;
-	height:30vw;
-	xmax-height:35vw;
-	min-width:25vw;
+	width:15em;
+	height:18em;
 	margin:2px 2px 2px 2px;
+	border:3px solid white;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+
+.titleblock {
+	z-index:1;
+	overflow:none;
+	font-weight: bolder;
+	color:black;
+	display:block;
+	text-align:center;
+	vertical-align:top;
+	xwidth:18em;
+	height:1.5em;
+}
+
+
+
+img[alt].folderlogo, .foldertitle {
+   	margin-top: -10px;
+	position:absolute;
+	overflow:none;
+	xxbackground-color: rgba(248, 247, 216, 0.95);
+	color: rgba(248, 247, 216, 0.95);
+	font-weight: bolder;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	display:block;
+	text-align:center;
+	width:15em;
+	z-index:10;
+	vertical-align:top;
+}
+
+
+.folderlogo {
+	padding-top: 0.25em;
+	position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+	font-weight: bolder;
+	vertical-align:top;
+	max-width:18em;
+	max-height:6em;
+	z-index:10;
+	overflow:none;
+   	margin-top: -15px;
+ 	text-align:center;
+ 	padding-bottom:2em;
 }
 
 .folderimage {
@@ -107,84 +199,28 @@ width:100%;
    	display: block;
    	margin:auto;
    	text-align:center;
- 	vertical-align: middle;
+ 	vertical-align: bottom;
+ 	padding-top:2em;
  	padding-bottom:4px;
  	text-align:center;
-	max-height:25vw;
-	max-width:25vw;
+	max-height:15em;
+	max-width:15em;
 }
 
-	.titleblock {
-	z-index:1;
-	overflow:none;
-	font-weight: bolder;
-	color:black;
-	display:block;
-	text-align:center;
-	vertical-align:top;
-	max-width:25vw;
-	height:6vw;
-}
-
-	.folderlogo {
-	position:absolute;
-	top:0vw;
-	left: 4vw;
-	z-index:10;
-	overflow:visible;
-	font-weight: bolder;
-	color:black;
-	display:block;
-	text-align:center;
-	vertical-align:top;
-	max-width:24vw;
-	height:10vw;
-}
-
-	.folderlogo:hover {
+.folderlogo:hover {
 	background-color:#444444;
-	
 }
 
-.foldertitle {
-	position:absolute;
-	overflow:none;
-	background-color: rgba(248, 247, 216, 0.95);
-	font-weight: bolder;
-	font-size: smaller;
-	color:black;
-	padding:2px 2px 2px 2px;
-	display:block;
-	text-align:center;
-	width:25vw;
-	z-index:10;
-	vertical-align:top;
-	max-height:10vw;
-}
+
 .folderdisplay {
 	position:relative;
 	bottom:0;
 }
 
-img.folderimage {
-	
-	xvertical-align:bottom;
-	xmax-height:10em;
-	xmax-width:13em;
-}
-
-img.foldericon {
-	xvertical-align:bottom;
-	xheight:5em;
-	xwidth:5em;
-}
-
-img.cover {
-	max-width:300px;
-	max-height:150px;
-	float:left;
-	padding-left:5px;
-	padding-right:15px;	
+.windowcontrol {
+	position:absolute;
+	right:10px;
+	top:0px;
 }
 
 img.photo {
@@ -196,8 +232,8 @@ img.photo {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position:center;
-	border: 2px silver;
-	background-color:#222222;
+	border: 1px solid #444444;
+	background-color:#111111;
 }
 .video-bg {
 	background-image: url("icon/video-bg.png");
@@ -236,7 +272,7 @@ white-space: nowrap;
 
 
 .button {
-	padding:0px;
+padding:0px;
 text-align:center;
 width:32px;
 height:32px;
@@ -254,14 +290,15 @@ height:32px;
 }
 
 
-.button a {
+.button a,  {
 font-weight:bold;
 color:#FF6;
 text-decoration:none;
 }
 
-.simplebutton{
+.simplebutton, button{
 background-color:#666;
+font-size:1em;
 font-weight:bold;
 color:#FF6;
 border:solid #999 1px;
@@ -269,7 +306,7 @@ border:solid #999 1px;
 
 
 #CHOLDER{
-text-align:center;
+xxtext-align:center;
 }
 #CURRENT{
 	margin-left: auto;
@@ -290,3 +327,23 @@ xoverflow:scroll;
 #BUTTONTABLE td {
  width:20%;
 }
+
+
+
+ .MAX {
+position:absolute;
+background-color:#222222;
+top: 10px;
+bottom: 5px;
+left: 5px;
+right: 5px;
+width: 100%;
+max-width:100%;
+z-index:10;
+}
+.MAX  .cover  {
+	max-width:99vw;
+	max-height:99vh;
+
+}
+

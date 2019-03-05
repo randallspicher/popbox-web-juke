@@ -216,7 +216,7 @@ for (FileItem thisfile: directories){
 
 		<span class="folderimagebox">
 			<%
-			String image=Utility.getCoverImage(thismountpoint,mountpoint,localpoint,httppoint);
+			String image=Utility.getThumb(thismountpoint,mountpoint,localpoint,httppoint);
 
 			if (image!=null){	
 				%>
@@ -288,7 +288,7 @@ for (FileItem thisfile: files){
 <td></td>
 <td class="icon">
 				<%
-				String image=Utility.getCoverImage(thismountpoint,mountpoint,localpoint,httppoint);
+				String image=Utility.getThumb(thismountpoint,mountpoint,localpoint,httppoint);
 
 				if (image!=null){	
 					%>

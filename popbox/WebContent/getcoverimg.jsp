@@ -60,6 +60,9 @@ mount=mount.replaceFirst("file:///opt/sybhttpd/localhost.drives/NETWORK_SHARE/sh
 //	String mountpoint="";
 	String localpoint="";
 	String httppoint="";
+	String rootpath="";
+	String httppath="";
+
 	Pattern sharepattern = Pattern.compile("^([^/:]+)://([^/]*)/+([^/]+)", Pattern.CASE_INSENSITIVE);
 	Matcher mm = sharepattern.matcher(mountpoint);
 
@@ -80,7 +83,13 @@ mount=mount.replaceFirst("file:///opt/sybhttpd/localhost.drives/NETWORK_SHARE/sh
 			localpoint=node.get("localpoint");
 			httppoint=node.get("httppoint");
 		}
+		
+		
+		rootpath = mount.replaceFirst(mountpoint, localpoint);
+		httppath = mount.replaceFirst(mountpoint, httppoint);
+
 	}
+
 
 	String imgsize = request.getParameter("imgsize");
 	
@@ -88,9 +97,7 @@ mount=mount.replaceFirst("file:///opt/sybhttpd/localhost.drives/NETWORK_SHARE/sh
 		imgsize = "100";
 	}
 
-	String image=Utility.getCoverImage(mount,mountpoint,localpoint,httppoint);
-
-
+	String image=Utility.getCover(mount,mountpoint,localpoint,httppoint);
 	if (null!=image && !image.isEmpty()){
 		%>
 		<a href="<%=image%>" target="_blank">
@@ -98,6 +105,45 @@ mount=mount.replaceFirst("file:///opt/sybhttpd/localhost.drives/NETWORK_SHARE/sh
 		</a>
 		<%
 	}
+
+
+
+	image=null;
+	image=Utility.getFanart(mount,mountpoint,localpoint,httppoint);
+	if (null == image){
+		image=Utility.getFanart(mount+"..",mountpoint,localpoint,httppoint);
+	}	
 	
+/*		
+	{
+	File FANART = new File(rootpath+"/fanart.jpg");
+		try {
+			if (FANART.isFile()){
+				image=httppath+"/fanart.jpg";
+			}
+		}
+		catch (Exception EX){
+			
+		}
+	}
+	if (null == image){
+		File FANART = new File(rootpath+"/../fanart.jpg");
+		try {
+			if (FANART.isFile()){
+				image=httppath+"/../fanart.jpg";
+			}
+		}
+		catch (Exception EX){
+			
+		}
+	}
+*/
+	if (null!=image && !image.isEmpty()){
+		%>
+		<a href="<%=image%>" target="_blank">
+		<img src="<%=image%>" class="cover"/>
+		</a>
+		<%
+	}
 	
 %>
