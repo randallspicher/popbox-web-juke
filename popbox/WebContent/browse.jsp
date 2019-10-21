@@ -297,12 +297,13 @@ for (FileItem thisfile: directories){
 	}
 	
 	if (thumb!=null){	
-		thumb=Utility.htmlEncode(thumb);
-		bgstyle="background-image:url(\""+thumb+"\"); background-size:contain; backcground-repeat:no-repeat;";
+		thumb=Utility.escapeURL(thumb)+"?test=none";
+		bgstyle="background-image:url(\""+thumb+"\"); background-size:contain; backcground-repeat:no-repeat;test:blah;";
 	}
 
 	if (logo!=null){	
-		logo=Utility.htmlEncode(logo);
+		
+		logo=Utility.escapeURL(logo);
 //		bgstyle="background-image:url(\""+logo+"\"); background-size:contain; backcground-repeat:no-repeat;";
 	}
 	String foldertitle=Utility.htmlEncode(filename).replaceAll("_"," ");

@@ -1,3 +1,4 @@
+<%@page import="org.springframework.web.util.UriUtils"%>
 <%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page import="org.jaudiotagger.tag.FieldKey"%>
 <%@page import="org.jaudiotagger.audio.generic.GenericTag"%>
@@ -168,18 +169,22 @@ if (null == poster){
 %>
 
 
-		<% if (null != logo){%>
+		<% if (null != logo){
+		logo=UriUtils.encodePath(logo,"UTF-8");
+		%>
 		<img class="logo" src="<%=logo%>"/>
 		<% } %>
 <div class="folderinfo">
 <%
 if (poster!=null){
+	poster=UriUtils.encodePath(poster,"UTF-8");
 	%>
 	<img class="poster" src="<%=poster %>"/>
 	<%
 }
 
 if (fanart!=null){
+	fanart=UriUtils.encodePath(fanart,"UTF-8");
 	%>
 	<img class="fanart" src="<%=fanart%>"/>
 	<%

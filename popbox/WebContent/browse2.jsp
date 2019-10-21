@@ -1,3 +1,5 @@
+<%@page import="org.springframework.web.util.HtmlUtils"%>
+<%@page import="org.springframework.web.util.UriUtils"%>
 <%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page import="org.jaudiotagger.tag.FieldKey"%>
 <%@page import="org.jaudiotagger.audio.generic.GenericTag"%>
@@ -413,13 +415,15 @@ for (FileItem thisfile: directories){
 	}
 	
 	if (thumb!=null){	
-		thumb=Utility.htmlEncode(thumb);
+		//thumb=Utility.htmlEncode(thumb);
+		thumb=UriUtils.encodePath(thumb, "UTF-8");
 		bgstyle="background-image:url(\""+thumb+"\"); background-size:contain; backcground-repeat:no-repeat;";
 	}
 
 	if (logo!=null){	
-		logo=Utility.htmlEncode(logo);
-//		bgstyle="background-image:url(\""+logo+"\"); background-size:contain; backcground-repeat:no-repeat;";
+		//logo=Utility.htmlEncode(logo);
+		logo=UriUtils.encodePath(logo, "UTF-8");
+		//		bgstyle="background-image:url(\""+logo+"\"); background-size:contain; backcground-repeat:no-repeat;";
 	}
 	String foldertitle=Utility.htmlEncode(filename).replaceAll("_"," ");
 
@@ -579,6 +583,7 @@ for (FileItem thisfile: files){
 		if ("photo".equalsIgnoreCase(type)){
 
 			String imageurl=httppath+"/"+filename;
+			imageurl=UriUtils.encodePath(imageurl,"UTF-8");
 			%><td class='icon'>
 			<img class="photo" alt='(<%=type%>)' title='(<%=type%>)' src="<%=imageurl%>"/>
 			</td>
