@@ -300,8 +300,8 @@ function processQueue(){
 			title=title.replace(/[_.]/g,' ').replace(/mp3$|flac$|wav$|dts$|avi$|mpg$|mkv$/i,'');
 		}
 
-		filepath=encodeURI(filepath);
-		title=encodeURI(title);
+		filepath=encodeURIComponent(filepath);
+		title=encodeURIComponent(title);
 		//if (type=='video'){
 		//	queuetype='vod';
 		//}	

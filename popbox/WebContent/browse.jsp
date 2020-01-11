@@ -1,4 +1,5 @@
 <%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
+<%@page import="org.springframework.web.util.UriUtils"%>
 <%@page import="org.jaudiotagger.tag.FieldKey"%>
 <%@page import="org.jaudiotagger.audio.generic.GenericTag"%>
 <%@page import="org.jaudiotagger.audio.AudioFile"%>
@@ -297,13 +298,15 @@ for (FileItem thisfile: directories){
 	}
 	
 	if (thumb!=null){	
-		thumb=Utility.escapeURL(thumb)+"?test=none";
+		thumb=UriUtils.encodePath(thumb,"UTF-8");
+		//thumb=Utility.escapeURL(thumb)+"?test=none";
 		bgstyle="background-image:url(\""+thumb+"\"); background-size:contain; backcground-repeat:no-repeat;test:blah;";
 	}
 
 	if (logo!=null){	
+		logo=UriUtils.encodePath(logo,"UTF-8");
 		
-		logo=Utility.escapeURL(logo);
+//		logo=Utility.escapeURL(logo);
 //		bgstyle="background-image:url(\""+logo+"\"); background-size:contain; backcground-repeat:no-repeat;";
 	}
 	String foldertitle=Utility.htmlEncode(filename).replaceAll("_"," ");
@@ -313,7 +316,7 @@ for (FileItem thisfile: directories){
 
 	<a class="folderbox folder-bg" 
 		href='javascript:browse("<%=Utility.htmlEncode(mount+"/"+filename)%>");'>
-
+TESTING
 	<div class="titleblock">
 		<% if (null != logo){%>
 		<img class="folderlogo" src='<%=logo%>' alt="<%=foldertitle%>" title="<%=foldertitle %>" />

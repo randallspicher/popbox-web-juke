@@ -12,16 +12,16 @@
 	<jsp:directive.page import="javax.servlet.ServletContext" />
 
 	<c:set var="nmthost" value="192.168.1.11" scope="session" />
-	<c:set var="mountpoint" value="nfs://192.168.1.2/music-share/ALL-MUSIC/Genres" scope="session" />
+	<c:set var="mountpoint" value="nfs://192.168.1.2/music/Genres" scope="session" />
 
 <jsp:scriptlet><![CDATA[
 
 HashMap<String,HashMap<String,String>> MainMap=new HashMap<String,HashMap<String,String>>();
 {
 	HashMap<String,String> node=new HashMap<String,String>();
-	node.put("localpoint","/media-share");
-	node.put("httppoint","/media-share");
-	MainMap.put("media-share",node);
+	node.put("localpoint","/music");
+	node.put("httppoint","/music");
+	MainMap.put("music",node);
 }
 
 {
@@ -30,6 +30,14 @@ HashMap<String,HashMap<String,String>> MainMap=new HashMap<String,HashMap<String
 	node.put("httppoint","/music-share");
 	MainMap.put("music-share",node);
 }
+
+{
+	HashMap<String,String> node=new HashMap<String,String>();
+	node.put("localpoint","/media-share");
+	node.put("httppoint","/media-share");
+	MainMap.put("media-share",node);
+}
+
 request.getSession().setAttribute("sharemap",MainMap);
 
 ]]></jsp:scriptlet>

@@ -435,13 +435,13 @@ for (FileItem thisfile: directories){
 
 	<div class="titleblock">
 		<% if (null != logo){%>
-		<img class="folderlogo" src='<%=logo%>' alt="<%=foldertitle%>" title="<%=foldertitle %>" />
+		<img class="folderlogo" src='<%=Utility.htmlEncode(logo)%>' alt="<%=foldertitle%>" title="<%=foldertitle %>" />
 		<%} else { %>
 		<div class="foldertitle"><%=foldertitle%></div>
 		<% } %>
 	</div>
 	<%if (thumb!=null){%>	
-		<img  class="folderimage" src='<%=thumb%>'/>
+		<img  class="folderimage" src='<%=Utility.htmlEncode(thumb)%>'/>
 	<%} %>
 
 	</a>
